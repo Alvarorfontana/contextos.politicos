@@ -32,13 +32,15 @@
         textarea { min-height: 120px; resize: vertical; }
         .hint { font-size: 0.75rem; color: #888; margin-top: 3px; }
 
-        .btn { padding: 10px 18px; border: none; border-radius: 3px; font-weight: 700; cursor: pointer; font-size: 0.9rem; margin-right: 8px; }
+        .btn { padding: 10px 18px; border: none; border-radius: 3px; font-weight: 700; cursor: pointer; font-size: 0.9rem; margin-right: 8px; margin-bottom: 8px; }
         .btn-primary { background: var(--navy); color: white; }
         .btn-primary:hover { background: var(--blue); }
         .btn-secondary { background: #e0e0e0; color: #333; }
         .btn-secondary:hover { background: #d0d0d0; }
         .btn-danger { background: var(--red); color: white; }
         .btn-danger:hover { background: #a00000; }
+        .btn-yellow { background: var(--yellow); color: var(--navy); }
+        .btn-yellow:hover { background: #e6cc00; }
 
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         th, td { text-align: left; padding: 10px; border-bottom: 1px solid var(--line); }
@@ -54,7 +56,20 @@
         .actions button:hover { background: var(--bg); }
 
         .empty-state { text-align: center; padding: 40px; color: #888; }
+        .status-msg { padding: 10px; border-radius: 3px; margin-bottom: 15px; font-size: 0.9rem; display: none; }
+        .status-ok { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .status-err { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; justify-content: center; align-items: center; }
+        .modal-box { background: white; width: 90%; max-width: 700px; max-height: 90vh; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; }
+        .modal-header { background: var(--navy); color: white; padding: 15px 20px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+        .modal-body p { margin-bottom: 12px; font-size: 0.9rem; color: #444; }
+        .modal-body textarea { width: 100%; min-height: 300px; font-family: monospace; font-size: 0.85rem; padding: 12px; border: 1px solid var(--line); border-radius: 3px; background: #f9f9f9; }
+        .modal-footer { padding: 15px 20px; border-top: 1px solid var(--line); text-align: right; background: #fafafa; }
+        .close-x { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
     </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -67,9 +82,9 @@
 
     <div class="container">
         <div class="grid">
-            <!-- FORMULARIO -->
             <div class="panel">
                 <h2 id="form-title">Nueva Noticia</h2>
+                <div id="status-msg" class="status-msg"></div>
                 <form id="article-form">
                     <input type="hidden" id="edit-id">
 
@@ -130,15 +145,25 @@
                         <input type="date" id="date" required>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Guardar Noticia</button>
+                    <button type="submit" class="btn btn-primary">Guardar en memoria</button>
                     <button type="button" class="btn btn-secondary" onclick="resetForm()">Limpiar / Nuevo</button>
                     <button type="button" class="btn btn-danger" onclick="deleteCurrent()" id="btn-delete" style="display:none;">Eliminar</button>
                 </form>
+
+                <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid var(--yellow);">
+                    <p style="font-size: 0.85rem; color: #555; margin-bottom: 10px;">
+                        <strong>¿Cómo publicar los cambios?</strong><br>
+                        1. Editá las noticias acá arriba.<br>
+                        2. Hacé clic en "Generar JSON para GitHub".<br>
+                        3. Copiá el código, andá a tu repo de GitHub, abrí <code>data.json</code> y pegalo.<br>
+                        4. Guardá el commit. Vercel se actualiza solo.
+                    </p>
+                    <button type="button" class="btn btn-yellow" onclick="openExportModal()">📋 Generar JSON para GitHub</button>
+                </div>
             </div>
 
-            <!-- LISTADO -->
             <div class="panel">
-                <h2>Noticias Guardadas</h2>
+                <h2>Noticias Cargadas</h2>
                 <div id="articles-list">
                     <div class="empty-state">Cargando...</div>
                 </div>
@@ -146,15 +171,51 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="exportModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>JSON listo para copiar a GitHub</span>
+                <button class="close-x" onclick="closeExportModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Copiá todo el texto de abajo, andá a tu repositorio de GitHub, abrí el archivo <strong>data.json</strong>, hacé clic en el lápiz (editar), pegá el contenido y guardá el commit.</p>
+                <textarea id="export-json" readonly></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="copyToClipboard()">📋 Copiar al portapapeles</button>
+                <button class="btn btn-secondary" onclick="closeExportModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        function getArticles() {
-            const stored = localStorage.getItem('cp_articles');
-            return stored ? JSON.parse(stored) : [];
+        const DATA_URL = "https://raw.githubusercontent.com/Alvarorfontana/contextos.politicos/main/data.json";
+
+        let cachedArticles = [];
+
+        function showStatus(msg, ok) {
+            const el = document.getElementById('status-msg');
+            el.textContent = msg;
+            el.className = 'status-msg ' + (ok ? 'status-ok' : 'status-err');
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 4000);
         }
 
-        function saveArticles(articles) {
-            localStorage.setItem('cp_articles', JSON.stringify(articles));
-            renderList();
+        async function getArticles() {
+            try {
+                const res = await fetch(DATA_URL);
+                if (!res.ok) throw new Error("Error al leer");
+                cachedArticles = await res.json();
+                renderList();
+                return cachedArticles;
+            } catch (e) {
+                console.error(e);
+                document.getElementById('articles-list').innerHTML = `
+                    <div class="empty-state" style="color:var(--red);">
+                        Error al cargar data.json.<br>Revisá la URL en el código.
+                    </div>`;
+                return [];
+            }
         }
 
         function resetForm() {
@@ -167,11 +228,11 @@
         }
 
         function renderList() {
-            const articles = getArticles();
+            const articles = cachedArticles;
             const container = document.getElementById('articles-list');
 
             if (articles.length === 0) {
-                container.innerHTML = '<div class="empty-state">No hay noticias guardadas.</div>';
+                container.innerHTML = '<div class="empty-state">No hay noticias.</div>';
                 return;
             }
 
@@ -203,8 +264,7 @@
         }
 
         function loadArticle(id) {
-            const articles = getArticles();
-            const a = articles.find(x => x.id === id);
+            const a = cachedArticles.find(x => x.id === id);
             if (!a) return;
 
             document.getElementById('edit-id').value = a.id;
@@ -230,9 +290,9 @@
             if (!id) return;
             if (!confirm('¿Seguro que querés eliminar esta noticia?')) return;
 
-            let articles = getArticles();
-            articles = articles.filter(a => a.id !== id);
-            saveArticles(articles);
+            cachedArticles = cachedArticles.filter(a => a.id !== id);
+            renderList();
+            showStatus('Noticia eliminada de la memoria. Recordá exportar el JSON a GitHub.', true);
             resetForm();
         }
 
@@ -258,27 +318,47 @@
                 date: document.getElementById('date').value
             };
 
-            let articles = getArticles();
-
             if (isEditing) {
-                const idx = articles.findIndex(a => a.id === editId);
-                if (idx !== -1) articles[idx] = newArticle;
+                const idx = cachedArticles.findIndex(a => a.id === editId);
+                if (idx !== -1) cachedArticles[idx] = newArticle;
             } else {
-                if (articles.find(a => a.id === newArticle.id)) {
+                if (cachedArticles.find(a => a.id === newArticle.id)) {
                     alert('Ya existe una noticia con ese ID. Usá otro.');
                     return;
                 }
-                articles.push(newArticle);
+                cachedArticles.push(newArticle);
             }
 
-            saveArticles(articles);
+            renderList();
+            showStatus(isEditing ? 'Noticia actualizada en memoria.' : 'Noticia creada en memoria.', true);
             resetForm();
-            alert(isEditing ? 'Noticia actualizada.' : 'Noticia creada.');
         });
 
-        // Inicializar
-        resetForm();
-        renderList();
+        function openExportModal() {
+            const json = JSON.stringify(cachedArticles, null, 2);
+            document.getElementById('export-json').value = json;
+            document.getElementById('exportModal').style.display = 'flex';
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').style.display = 'none';
+        }
+
+        function copyToClipboard() {
+            const ta = document.getElementById('export-json');
+            ta.select();
+            document.execCommand('copy');
+            alert('¡JSON copiado! Ahora pegalo en data.json de tu repositorio de GitHub.');
+        }
+
+        document.getElementById('exportModal').addEventListener('click', function(e) {
+            if (e.target === this) closeExportModal();
+        });
+
+        (async function init() {
+            await getArticles();
+            resetForm();
+        })();
     </script>
 </body>
 </html>

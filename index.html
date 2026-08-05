@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contexto Político | Noticias e Investigación</title>
-    <!-- Fuentes periodísticas estilo The Guardian -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&family=Public+Sans:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
 
     <style>
-        /* --- PALETA CROMÁTICA AUTÉNTICA DE THE GUARDIAN --- */
         :root {
             --guardian-navy: #052962;
             --guardian-blue: #005689;
@@ -22,19 +20,15 @@
             --guardian-line: #dcdcdc;
             --guardian-opinion-bg: #fef9e7;
             --blanco: #ffffff;
-            
             --fuente-titulo: 'Merriweather', Georgia, serif;
             --fuente-sans: 'Public Sans', -apple-system, sans-serif;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: var(--fuente-sans); background-color: var(--guardian-bg); color: var(--guardian-dark); line-height: 1.4; }
         a { text-decoration: none; color: inherit; }
         img { max-width: 100%; height: auto; display: block; }
-
         .container { max-width: 1300px; margin: 0 auto; padding: 0 15px; }
 
-        /* HEADER */
         header { background-color: var(--guardian-navy); color: var(--blanco); border-bottom: 3px solid var(--guardian-yellow); }
         .top-subhead { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.8rem; color: #d1e8ff; border-bottom: 1px solid rgba(255, 255, 255, 0.15); }
         .header-main { padding: 25px 0 20px 0; display: flex; justify-content: space-between; align-items: flex-end; }
@@ -42,7 +36,6 @@
         .site-title span { color: var(--guardian-accent); }
         .edition-tag { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--guardian-yellow); margin-bottom: 6px; }
 
-        /* NAV */
         nav { background-color: var(--guardian-navy); border-bottom: 1px solid rgba(255, 255, 255, 0.2); position: sticky; top: 0; z-index: 1000; }
         .nav-menu-primary, .nav-menu-secondary { display: flex; list-style: none; overflow-x: auto; white-space: nowrap; }
         .nav-menu-primary { border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
@@ -51,6 +44,9 @@
         .nav-menu-secondary { background-color: #031b42; }
         .nav-menu-secondary li a { display: block; padding: 8px 14px; color: #d1e8ff; font-size: 0.82rem; font-weight: 600; }
         .nav-menu-secondary li a:hover { color: var(--blanco); background-color: rgba(255, 255, 255, 0.08); }
+
+        .admin-btn { position: fixed; bottom: 20px; right: 20px; background: var(--guardian-yellow); color: var(--guardian-navy); padding: 12px 18px; border-radius: 4px; font-weight: 800; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 9999; border: none; cursor: pointer; text-decoration: none; }
+        .admin-btn:hover { background: #e6cc00; }
 
         .live-dot { display: inline-block; width: 10px; height: 10px; background-color: var(--guardian-red); border-radius: 50%; margin-right: 6px; animation: pulse 1.5s infinite; vertical-align: middle; }
         @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(199, 0, 0, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(199, 0, 0, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(199, 0, 0, 0); } }
@@ -88,6 +84,8 @@
         .footer-info p { font-size: 0.85rem; color: #d1e8ff; margin-bottom: 8px; line-height: 1.5; }
         .copyright { border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 20px; font-size: 0.8rem; color: #a0c4e8; text-align: center; }
 
+        .loading-msg { text-align: center; padding: 60px; color: #666; font-size: 1.1rem; }
+
         @media (max-width: 992px) {
             .frontpage-grid { grid-template-columns: 1fr; }
             .lead-content-flex { flex-direction: column-reverse; }
@@ -96,6 +94,7 @@
             .site-title { font-size: 2.5rem; }
         }
     </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -103,12 +102,12 @@
         <div class="container">
             <div class="top-subhead">
                 <span>Edición Digital Argentina e Internacional</span>
-                <span>Miércoles, 22 de Julio de 2026</span>
+                <span id="current-date">Cargando fecha...</span>
             </div>
             <div class="header-main">
                 <div>
                     <div class="edition-tag">Periodismo Político de Investigación</div>
-                    <a href="/"><h1 class="site-title">Contexto <span>Político</span></h1></a>
+                    <a href="index.html"><h1 class="site-title">Contexto <span>Político</span></h1></a>
                 </div>
             </div>
         </div>
@@ -117,7 +116,7 @@
     <nav>
         <div class="container">
             <ul class="nav-menu-primary">
-                <li><a href="#noticias">Noticias</a></li>
+                <li><a href="index.html">Noticias</a></li>
                 <li><a href="#opinion">Opinión</a></li>
                 <li><a href="#deportes">Deportes</a></li>
                 <li><a href="#cultura">Cultura</a></li>
@@ -141,57 +140,14 @@
         <div class="container">
             <div class="framed-header">/// Titulares Principales</div>
 
-            <div class="frontpage-grid">
-                <!-- COLUMNA 1: NOTICIA DESTACADA -->
-                <article class="lead-article" id="main-featured">
-                    <span class="article-kicker"><span class="live-dot"></span> Política Nacional & Geopolítica</span>
-                    <div class="lead-content-flex">
-                        <div class="lead-text">
-                            <!-- El enlace apunta a articulo.html pasándole un ID -->
-                            <a href="articulo.html?id=nota-principal" id="lead-link">
-                                <h2 class="lead-title" id="lead-title">Ni mito de la pureza ni acusación importada: la verdadera historia del mestizaje e integración en la Argentina</h2>
-                            </a>
-                            <p class="lead-subtitle" id="lead-subtitle">
-                                Frente a las narrativas internacionales que pretenden etiquetar a la Argentina bajo moldes raciales ajenos, un recorrido histórico desmonta las omisiones sobre el tráfico colonial...
-                            </p>
-                        </div>
-                        <figure class="lead-figure">
-                            <img id="lead-img" src="https://www.clarin.com/img/2013/12/05/BJhTdHgNx_1256x620.jpg" alt="Noticia Principal">
-                            <figcaption><strong>Enfoque:</strong> Análisis especial de investigación política.</figcaption>
-                        </figure>
-                    </div>
-                </article>
+            <div class="frontpage-grid" id="frontpage-content">
+                <div class="loading-msg">Cargando noticias...</div>
+            </div>
 
-                <!-- COLUMNA 2: NOTICIAS SECUNDARIAS -->
-                <section class="secondary-column">
-                    <article class="sub-article">
-                        <span class="article-kicker"><span class="live-dot"></span> Gremiales</span>
-                        <h3 class="sub-title"><a href="articulo.html?id=paritarias">Avanzan las negociaciones paritarias con foco en la pauta de recomposición</a></h3>
-                        <p style="font-size: 0.88rem; color: #555;">Representantes gremiales buscan definir los acuerdos del próximo trimestre en medio de complejas mesas de diálogo.</p>
-                    </article>
-
-                    <article class="sub-article">
-                        <span class="article-kicker"><span class="live-dot"></span> Economía & Política</span>
-                        <h3 class="sub-title"><a href="articulo.html?id=tasas-financieras">El impacto de las tasas y los flujos financieros en las economías emergentes</a></h3>
-                    </article>
-                </section>
-
-                <!-- COLUMNA 3: OPINIÓN -->
-                <aside class="opinion-column">
-                    <div class="framed-header" style="margin-bottom: 15px;">Análisis & Columnas</div>
-                    <div class="opinion-card">
-                        <span class="author-name">Análisis Internacional</span>
-                        <h4 style="font-family: var(--fuente-titulo); font-size: 0.95rem; margin-top: 4px;">
-                            <a href="articulo.html?id=geopolitica-maritima"><span class="live-dot"></span> El equilibrio geopolítico en los pasos marítimos de Asia y Medio Oriente</a>
-                        </h4>
-                    </div>
-                    <div class="opinion-card">
-                        <span class="author-name">Informe Especial</span>
-                        <h4 style="font-family: var(--fuente-titulo); font-size: 0.95rem; margin-top: 4px;">
-                            <a href="articulo.html?id=empleo-publico">Las transformaciones legislativas que reconfiguran el empleo público</a>
-                        </h4>
-                    </div>
-                </aside>
+            <div class="section-row">
+                <div class="framed-header">Más Noticias</div>
+                <div class="section-grid" id="more-news">
+                </div>
             </div>
         </div>
     </main>
@@ -219,5 +175,86 @@
         </div>
     </footer>
 
+    <a href="admin.html" class="admin-btn">✎ Administrar Noticias</a>
+
+    <script>
+        const DATA_URL = "https://raw.githubusercontent.com/Alvarorfontana/contextos.politicos/main/data.json";
+
+        async function getArticles() {
+            try {
+                const res = await fetch(DATA_URL);
+                if (!res.ok) throw new Error("No se pudo cargar");
+                return await res.json();
+            } catch (e) {
+                console.error(e);
+                document.getElementById('frontpage-content').innerHTML = `
+                    <div class="loading-msg" style="color:var(--guardian-red);">
+                        Error al cargar noticias. Revisá la URL de DATA_URL en el código.<br>
+                        Asegurate de que sea la URL "raw" de GitHub.
+                    </div>`;
+                return [];
+            }
+        }
+
+        async function renderFrontpage() {
+            const articles = await getArticles();
+            if (articles.length === 0) return;
+
+            const destacada = articles.find(a => a.category === 'destacada') || articles[0];
+            const secundarias = articles.filter(a => a.category === 'secundaria').slice(0, 2);
+            const opinion = articles.filter(a => a.category === 'opinion').slice(0, 2);
+            const generales = articles.filter(a => a.category === 'general');
+
+            const leadImg = destacada.image ? `<figure class="lead-figure"><img src="${destacada.image}" alt="${destacada.title}"><figcaption><strong>Enfoque:</strong> ${destacada.caption || 'Análisis especial.'}</figcaption></figure>` : '';
+            document.getElementById('frontpage-content').innerHTML = `
+                <article class="lead-article">
+                    <span class="article-kicker"><span class="live-dot"></span> ${destacada.kicker}</span>
+                    <div class="lead-content-flex">
+                        <div class="lead-text">
+                            <a href="articulo.html?id=${destacada.id}">
+                                <h2 class="lead-title">${destacada.title}</h2>
+                            </a>
+                            <p class="lead-subtitle">${destacada.subtitle}</p>
+                        </div>
+                        ${leadImg}
+                    </div>
+                </article>
+                <section class="secondary-column">
+                    ${secundarias.map(a => `
+                        <article class="sub-article">
+                            <span class="article-kicker"><span class="live-dot"></span> ${a.kicker}</span>
+                            <h3 class="sub-title"><a href="articulo.html?id=${a.id}">${a.title}</a></h3>
+                            <p style="font-size: 0.88rem; color: #555;">${a.subtitle}</p>
+                        </article>
+                    `).join('')}
+                </section>
+                <aside class="opinion-column">
+                    <div class="framed-header" style="margin-bottom: 15px;">Análisis & Columnas</div>
+                    ${opinion.map(a => `
+                        <div class="opinion-card">
+                            <span class="author-name">${a.kicker}</span>
+                            <h4 style="font-family: var(--fuente-titulo); font-size: 0.95rem; margin-top: 4px;">
+                                <a href="articulo.html?id=${a.id}"><span class="live-dot"></span> ${a.title}</a>
+                            </h4>
+                        </div>
+                    `).join('')}
+                </aside>
+            `;
+
+            document.getElementById('more-news').innerHTML = generales.map(a => `
+                <article class="card-news">
+                    <span class="article-kicker">${a.kicker}</span>
+                    ${a.image ? `<img src="${a.image}" alt="${a.title}" style="margin-top:8px; border-radius:2px;">` : ''}
+                    <h3><a href="articulo.html?id=${a.id}">${a.title}</a></h3>
+                    <p style="font-size:0.9rem; color:#555; margin-top:6px;">${a.subtitle}</p>
+                </article>
+            `).join('');
+
+            const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString('es-AR', opts);
+        }
+
+        renderFrontpage();
+    </script>
 </body>
 </html>
