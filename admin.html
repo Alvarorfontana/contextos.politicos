@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrar Noticias | Contexto Político</title>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #052962; --blue: #005689; --accent: #00b2ff; --yellow: #ffe500;
+            --red: #c70000; --dark: #121212; --bg: #f6f6f6; --line: #dcdcdc;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Public Sans', sans-serif; background: var(--bg); color: var(--dark); line-height: 1.4; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+        header { background: var(--navy); color: white; padding: 20px; border-bottom: 4px solid var(--yellow); margin-bottom: 30px; }
+        header h1 { font-size: 1.5rem; }
+        header a { color: var(--yellow); font-weight: 700; font-size: 0.9rem; float: right; margin-top: -24px; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 30px; }
+        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+        .panel { background: white; border: 1px solid var(--line); padding: 20px; border-radius: 4px; }
+        .panel h2 { font-size: 1.1rem; margin-bottom: 15px; color: var(--navy); border-bottom: 2px solid var(--yellow); padding-bottom: 8px; }
+
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; color: #555; }
+        input, textarea, select {
+            width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 3px;
+            font-family: inherit; font-size: 0.95rem;
+        }
+        textarea { min-height: 120px; resize: vertical; }
+        .hint { font-size: 0.75rem; color: #888; margin-top: 3px; }
+
+        .btn { padding: 10px 18px; border: none; border-radius: 3px; font-weight: 700; cursor: pointer; font-size: 0.9rem; margin-right: 8px; }
+        .btn-primary { background: var(--navy); color: white; }
+        .btn-primary:hover { background: var(--blue); }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        .btn-secondary:hover { background: #d0d0d0; }
+        .btn-danger { background: var(--red); color: white; }
+        .btn-danger:hover { background: #a00000; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid var(--line); }
+        th { background: var(--navy); color: white; font-size: 0.8rem; text-transform: uppercase; }
+        tr:hover { background: #fafafa; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 2px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .tag-destacada { background: var(--yellow); color: var(--navy); }
+        .tag-secundaria { background: #e3f2fd; color: var(--blue); }
+        .tag-opinion { background: #fff3e0; color: #e65100; }
+        .tag-general { background: #f3e5f5; color: #6a1b9a; }
+
+        .actions button { padding: 4px 10px; font-size: 0.75rem; margin-right: 4px; cursor: pointer; border: 1px solid var(--line); background: white; border-radius: 2px; }
+        .actions button:hover { background: var(--bg); }
+
+        .empty-state { text-align: center; padding: 40px; color: #888; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container" style="max-width: 1100px;">
+            <h1>Panel de Administración</h1>
+            <a href="index.html">← Ver portada</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="grid">
+            <!-- FORMULARIO -->
+            <div class="panel">
+                <h2 id="form-title">Nueva Noticia</h2>
+                <form id="article-form">
+                    <input type="hidden" id="edit-id">
+
+                    <div class="form-group">
+                        <label>ID único (sin espacios)</label>
+                        <input type="text" id="id" placeholder="ej: nota-principal" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Categoría de visualización</label>
+                        <select id="category">
+                            <option value="destacada">Destacada principal</option>
+                            <option value="secundaria">Secundaria (columna central)</option>
+                            <option value="opinion">Opinión / Análisis (columna derecha)</option>
+                            <option value="general">General (más noticias)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Kicker / Sección</label>
+                        <input type="text" id="kicker" placeholder="ej: Política Nacional" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Título</label>
+                        <input type="text" id="title" placeholder="Título principal" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Subtítulo / Bajada</label>
+                        <input type="text" id="subtitle" placeholder="Breve descripción">
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL de imagen (opcional)</label>
+                        <input type="text" id="image" placeholder="https://...">
+                        <div class="hint">Dejar vacío si no lleva imagen.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pie de foto / Caption</label>
+                        <input type="text" id="caption" placeholder="Descripción de la imagen">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contenido HTML</label>
+                        <textarea id="content" placeholder="<p>Párrafo 1...</p><p>Párrafo 2...</p>"></textarea>
+                        <div class="hint">Podés usar etiquetas HTML básicas: &lt;p&gt;, &lt;h3&gt;, &lt;strong&gt;, etc.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Autor</label>
+                        <input type="text" id="author" placeholder="Nombre del autor">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="date" id="date" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Guardar Noticia</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">Limpiar / Nuevo</button>
+                    <button type="button" class="btn btn-danger" onclick="deleteCurrent()" id="btn-delete" style="display:none;">Eliminar</button>
+                </form>
+            </div>
+
+            <!-- LISTADO -->
+            <div class="panel">
+                <h2>Noticias Guardadas</h2>
+                <div id="articles-list">
+                    <div class="empty-state">Cargando...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getArticles() {
+            const stored = localStorage.getItem('cp_articles');
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function saveArticles(articles) {
+            localStorage.setItem('cp_articles', JSON.stringify(articles));
+            renderList();
+        }
+
+        function resetForm() {
+            document.getElementById('article-form').reset();
+            document.getElementById('edit-id').value = '';
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('form-title').textContent = 'Nueva Noticia';
+            document.getElementById('btn-delete').style.display = 'none';
+            document.getElementById('id').disabled = false;
+        }
+
+        function renderList() {
+            const articles = getArticles();
+            const container = document.getElementById('articles-list');
+
+            if (articles.length === 0) {
+                container.innerHTML = '<div class="empty-state">No hay noticias guardadas.</div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Categoría</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${articles.map(a => `
+                            <tr>
+                                <td style="font-family:monospace; font-size:0.8rem;">${a.id}</td>
+                                <td style="font-weight:600;">${a.title.substring(0, 45)}${a.title.length>45?'...':''}</td>
+                                <td><span class="tag tag-${a.category}">${a.category}</span></td>
+                                <td class="actions">
+                                    <button onclick="loadArticle('${a.id}')">Editar</button>
+                                    <button onclick="previewArticle('${a.id}')">Ver</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function loadArticle(id) {
+            const articles = getArticles();
+            const a = articles.find(x => x.id === id);
+            if (!a) return;
+
+            document.getElementById('edit-id').value = a.id;
+            document.getElementById('id').value = a.id;
+            document.getElementById('id').disabled = true;
+            document.getElementById('category').value = a.category;
+            document.getElementById('kicker').value = a.kicker;
+            document.getElementById('title').value = a.title;
+            document.getElementById('subtitle').value = a.subtitle;
+            document.getElementById('image').value = a.image || '';
+            document.getElementById('caption').value = a.caption || '';
+            document.getElementById('content').value = a.content;
+            document.getElementById('author').value = a.author;
+            document.getElementById('date').value = a.date;
+
+            document.getElementById('form-title').textContent = 'Editar Noticia';
+            document.getElementById('btn-delete').style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteCurrent() {
+            const id = document.getElementById('edit-id').value;
+            if (!id) return;
+            if (!confirm('¿Seguro que querés eliminar esta noticia?')) return;
+
+            let articles = getArticles();
+            articles = articles.filter(a => a.id !== id);
+            saveArticles(articles);
+            resetForm();
+        }
+
+        function previewArticle(id) {
+            window.open(`articulo.html?id=${id}`, '_blank');
+        }
+
+        document.getElementById('article-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit-id').value;
+            const isEditing = !!editId;
+
+            const newArticle = {
+                id: document.getElementById('id').value.trim(),
+                category: document.getElementById('category').value,
+                kicker: document.getElementById('kicker').value.trim(),
+                title: document.getElementById('title').value.trim(),
+                subtitle: document.getElementById('subtitle').value.trim(),
+                image: document.getElementById('image').value.trim(),
+                caption: document.getElementById('caption').value.trim(),
+                content: document.getElementById('content').value.trim(),
+                author: document.getElementById('author').value.trim(),
+                date: document.getElementById('date').value
+            };
+
+            let articles = getArticles();
+
+            if (isEditing) {
+                const idx = articles.findIndex(a => a.id === editId);
+                if (idx !== -1) articles[idx] = newArticle;
+            } else {
+                if (articles.find(a => a.id === newArticle.id)) {
+                    alert('Ya existe una noticia con ese ID. Usá otro.');
+                    return;
+                }
+                articles.push(newArticle);
+            }
+
+            saveArticles(articles);
+            resetForm();
+            alert(isEditing ? 'Noticia actualizada.' : 'Noticia creada.');
+        });
+
+        // Inicializar
+        resetForm();
+        renderList();
+    </script>
+</body>
+</html>

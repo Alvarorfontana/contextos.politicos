@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contexto Político | Noticias e Investigación</title>
+    <!-- Fuentes periodísticas estilo The Guardian -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&family=Public+Sans:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- PALETA CROMÁTICA AUTÉNTICA DE THE GUARDIAN --- */
+        :root {
+            --guardian-navy: #052962;
+            --guardian-blue: #005689;
+            --guardian-accent: #00b2ff;
+            --guardian-yellow: #ffe500;
+            --guardian-red: #c70000;
+            --guardian-dark: #121212;
+            --guardian-bg: #f6f6f6;
+            --guardian-line: #dcdcdc;
+            --guardian-opinion-bg: #fef9e7;
+            --blanco: #ffffff;
+            
+            --fuente-titulo: 'Merriweather', Georgia, serif;
+            --fuente-sans: 'Public Sans', -apple-system, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--fuente-sans); background-color: var(--guardian-bg); color: var(--guardian-dark); line-height: 1.4; }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; height: auto; display: block; }
+
+        .container { max-width: 1300px; margin: 0 auto; padding: 0 15px; }
+
+        /* HEADER */
+        header { background-color: var(--guardian-navy); color: var(--blanco); border-bottom: 3px solid var(--guardian-yellow); }
+        .top-subhead { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.8rem; color: #d1e8ff; border-bottom: 1px solid rgba(255, 255, 255, 0.15); }
+        .header-main { padding: 25px 0 20px 0; display: flex; justify-content: space-between; align-items: flex-end; }
+        .site-title { font-family: var(--fuente-titulo); font-size: 3.6rem; font-weight: 900; letter-spacing: -1.5px; color: var(--blanco); line-height: 0.95; }
+        .site-title span { color: var(--guardian-accent); }
+        .edition-tag { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--guardian-yellow); margin-bottom: 6px; }
+
+        /* NAV */
+        nav { background-color: var(--guardian-navy); border-bottom: 1px solid rgba(255, 255, 255, 0.2); position: sticky; top: 0; z-index: 1000; }
+        .nav-menu-primary, .nav-menu-secondary { display: flex; list-style: none; overflow-x: auto; white-space: nowrap; }
+        .nav-menu-primary { border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .nav-menu-primary li a { display: block; padding: 10px 16px; color: var(--blanco); font-size: 0.95rem; font-weight: 800; border-top: 3px solid transparent; }
+        .nav-menu-primary li a:hover { background-color: #031b42; border-top-color: var(--guardian-yellow); color: var(--guardian-yellow); }
+        .nav-menu-secondary { background-color: #031b42; }
+        .nav-menu-secondary li a { display: block; padding: 8px 14px; color: #d1e8ff; font-size: 0.82rem; font-weight: 600; }
+        .nav-menu-secondary li a:hover { color: var(--blanco); background-color: rgba(255, 255, 255, 0.08); }
+
+        .live-dot { display: inline-block; width: 10px; height: 10px; background-color: var(--guardian-red); border-radius: 50%; margin-right: 6px; animation: pulse 1.5s infinite; vertical-align: middle; }
+        @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(199, 0, 0, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(199, 0, 0, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(199, 0, 0, 0); } }
+
+        main { padding: 20px 0; background-color: var(--blanco); border-left: 1px solid var(--guardian-line); border-right: 1px solid var(--guardian-line); }
+        .framed-header { background-color: var(--guardian-navy); color: var(--blanco); padding: 8px 14px; font-weight: 800; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-bottom: 20px; border-left: 4px solid var(--guardian-yellow); }
+
+        .frontpage-grid { display: grid; grid-template-columns: 2.5fr 1.5fr 1fr; gap: 20px; border-bottom: 1px solid var(--guardian-line); padding-bottom: 30px; margin-bottom: 30px; }
+        .lead-article { border-right: 1px solid var(--guardian-line); padding-right: 20px; }
+        .lead-content-flex { display: flex; gap: 20px; align-items: flex-start; }
+        .lead-text { flex: 1; }
+        .lead-figure { flex: 1; margin-bottom: 0; }
+        .article-kicker { color: var(--guardian-red); font-weight: 800; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 5px; display: flex; align-items: center; }
+        .lead-title { font-family: var(--fuente-titulo); font-size: 2.1rem; font-weight: 900; line-height: 1.15; margin-bottom: 12px; color: var(--guardian-navy); }
+        .lead-title:hover { color: var(--guardian-blue); }
+        .lead-subtitle { font-size: 1rem; color: #444; line-height: 1.4; }
+        figcaption { font-size: 0.8rem; color: #555; padding-top: 6px; border-top: 2px solid var(--guardian-blue); margin-top: 6px; line-height: 1.3; }
+
+        .secondary-column { border-right: 1px solid var(--guardian-line); padding-right: 20px; display: flex; flex-direction: column; gap: 20px; }
+        .sub-article { border-bottom: 1px solid var(--guardian-line); padding-bottom: 15px; }
+        .sub-title { font-family: var(--fuente-titulo); font-size: 1.2rem; font-weight: 700; line-height: 1.2; margin-bottom: 8px; color: var(--guardian-dark); }
+
+        .opinion-column { background-color: var(--guardian-opinion-bg); padding: 15px; border: 1px solid #f2e3b8; border-top: 4px solid var(--guardian-yellow); }
+        .opinion-card { margin-bottom: 15px; border-bottom: 1px solid #e8d7a5; padding-bottom: 10px; }
+
+        .section-row { margin-top: 40px; padding-top: 15px; border-top: 2px solid var(--guardian-navy); }
+        .section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 15px; }
+        .card-news { border-top: 1px solid var(--guardian-line); padding-top: 10px; }
+        .card-news h3 { font-family: var(--fuente-titulo); font-size: 1.15rem; margin-top: 8px; line-height: 1.25; color: var(--guardian-dark); }
+
+        footer { background-color: var(--guardian-navy); color: var(--blanco); padding: 40px 0 20px 0; border-top: 4px solid var(--guardian-yellow); }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+        .footer-brand { font-family: var(--fuente-titulo); font-size: 2.2rem; font-weight: 900; margin-bottom: 10px; }
+        .footer-brand span { color: var(--guardian-accent); }
+        .footer-info p { font-size: 0.85rem; color: #d1e8ff; margin-bottom: 8px; line-height: 1.5; }
+        .copyright { border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 20px; font-size: 0.8rem; color: #a0c4e8; text-align: center; }
+
+        @media (max-width: 992px) {
+            .frontpage-grid { grid-template-columns: 1fr; }
+            .lead-content-flex { flex-direction: column-reverse; }
+            .lead-article, .secondary-column { border-right: none; padding-right: 0; border-bottom: 1px solid var(--guardian-line); padding-bottom: 20px; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .site-title { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <div class="top-subhead">
+                <span>Edición Digital Argentina e Internacional</span>
+                <span>Miércoles, 22 de Julio de 2026</span>
+            </div>
+            <div class="header-main">
+                <div>
+                    <div class="edition-tag">Periodismo Político de Investigación</div>
+                    <a href="/"><h1 class="site-title">Contexto <span>Político</span></h1></a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul class="nav-menu-primary">
+                <li><a href="#noticias">Noticias</a></li>
+                <li><a href="#opinion">Opinión</a></li>
+                <li><a href="#deportes">Deportes</a></li>
+                <li><a href="#cultura">Cultura</a></li>
+                <li><a href="#estilo-de-vida">Estilo de Vida</a></li>
+            </ul>
+            <ul class="nav-menu-secondary">
+                <li><a href="#mundo">Mundo</a></li>
+                <li><a href="#mundial-2026">Mundial 2026</a></li>
+                <li><a href="#politica-eeuu">Política EE.UU.</a></li>
+                <li><a href="#reino-unido">Reino Unido</a></li>
+                <li><a href="#crisis-climatica">Crisis Climática</a></li>
+                <li><a href="#medio-oriente">Medio Oriente</a></li>
+                <li><a href="#ucrania">Ucrania</a></li>
+                <li><a href="#tecnologia">Tecnología</a></li>
+                <li><a href="#negocios">Negocios</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="framed-header">/// Titulares Principales</div>
+
+            <div class="frontpage-grid">
+                <!-- COLUMNA 1: NOTICIA DESTACADA -->
+                <article class="lead-article" id="main-featured">
+                    <span class="article-kicker"><span class="live-dot"></span> Política Nacional & Geopolítica</span>
+                    <div class="lead-content-flex">
+                        <div class="lead-text">
+                            <!-- El enlace apunta a articulo.html pasándole un ID -->
+                            <a href="articulo.html?id=nota-principal" id="lead-link">
+                                <h2 class="lead-title" id="lead-title">Ni mito de la pureza ni acusación importada: la verdadera historia del mestizaje e integración en la Argentina</h2>
+                            </a>
+                            <p class="lead-subtitle" id="lead-subtitle">
+                                Frente a las narrativas internacionales que pretenden etiquetar a la Argentina bajo moldes raciales ajenos, un recorrido histórico desmonta las omisiones sobre el tráfico colonial...
+                            </p>
+                        </div>
+                        <figure class="lead-figure">
+                            <img id="lead-img" src="https://www.clarin.com/img/2013/12/05/BJhTdHgNx_1256x620.jpg" alt="Noticia Principal">
+                            <figcaption><strong>Enfoque:</strong> Análisis especial de investigación política.</figcaption>
+                        </figure>
+                    </div>
+                </article>
+
+                <!-- COLUMNA 2: NOTICIAS SECUNDARIAS -->
+                <section class="secondary-column">
+                    <article class="sub-article">
+                        <span class="article-kicker"><span class="live-dot"></span> Gremiales</span>
+                        <h3 class="sub-title"><a href="articulo.html?id=paritarias">Avanzan las negociaciones paritarias con foco en la pauta de recomposición</a></h3>
+                        <p style="font-size: 0.88rem; color: #555;">Representantes gremiales buscan definir los acuerdos del próximo trimestre en medio de complejas mesas de diálogo.</p>
+                    </article>
+
+                    <article class="sub-article">
+                        <span class="article-kicker"><span class="live-dot"></span> Economía & Política</span>
+                        <h3 class="sub-title"><a href="articulo.html?id=tasas-financieras">El impacto de las tasas y los flujos financieros en las economías emergentes</a></h3>
+                    </article>
+                </section>
+
+                <!-- COLUMNA 3: OPINIÓN -->
+                <aside class="opinion-column">
+                    <div class="framed-header" style="margin-bottom: 15px;">Análisis & Columnas</div>
+                    <div class="opinion-card">
+                        <span class="author-name">Análisis Internacional</span>
+                        <h4 style="font-family: var(--fuente-titulo); font-size: 0.95rem; margin-top: 4px;">
+                            <a href="articulo.html?id=geopolitica-maritima"><span class="live-dot"></span> El equilibrio geopolítico en los pasos marítimos de Asia y Medio Oriente</a>
+                        </h4>
+                    </div>
+                    <div class="opinion-card">
+                        <span class="author-name">Informe Especial</span>
+                        <h4 style="font-family: var(--fuente-titulo); font-size: 0.95rem; margin-top: 4px;">
+                            <a href="articulo.html?id=empleo-publico">Las transformaciones legislativas que reconfiguran el empleo público</a>
+                        </h4>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-info">
+                    <div class="footer-brand">Contexto <span>Político</span></div>
+                    <p>Publicación especializada en análisis geopolítico, asuntos legislativos, movimiento gremial y política internacional.</p>
+                </div>
+                <div class="footer-info">
+                    <h4 style="color: var(--guardian-yellow); text-transform: uppercase; margin-bottom: 10px; font-size: 0.9rem;">Institucional</h4>
+                    <p><strong>Director Responsable:</strong> Ramón Lahitte</p>
+                    <p><strong>Redacción:</strong> contacto@contextopolitico.com</p>
+                </div>
+                <div class="footer-info">
+                    <h4 style="color: var(--guardian-yellow); text-transform: uppercase; margin-bottom: 10px; font-size: 0.9rem;">Sede Central</h4>
+                    <p>Av. de Mayo 1234, CABA — República Argentina</p>
+                </div>
+            </div>
+            <div class="copyright">
+                © 2026 Contexto Político — Todos los derechos reservados.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
