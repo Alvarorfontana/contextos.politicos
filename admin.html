@@ -308,7 +308,7 @@
 
             document.getElementById('edit-id').value = a.id;
             document.getElementById('id').value = a.id;
-            document.getElementById('id').disabled = true;
+            document.getElementById('id').disabled = false;
             document.getElementById('category').value = a.category;
             document.getElementById('kicker').value = a.kicker;
             document.getElementById('title').value = a.title;
@@ -340,6 +340,7 @@
             e.preventDefault();
             const editId = document.getElementById('edit-id').value;
             const isEditing = !!editId;
+            const articleId = document.getElementById('id').value.trim();
 
             let imageUrl = document.getElementById('image').value.trim();
             const imageFile = document.getElementById('image-file').files[0];
@@ -368,7 +369,7 @@
                 date: document.getElementById('date').value
             };
 
-            if (!isEditing && cachedArticles.find(a => a.id === newArticle.id)) {
+            if (cachedArticles.find(a => a.id === articleId && a.id !== editId)) {
                 alert('Ya existe una noticia con ese ID. Usá otro.');
                 return;
             }
@@ -379,9 +380,16 @@
                 return;
             }
 
+            if (isEditing && editId !== articleId) {
+                const { error: deleteError } = await supabaseClient.from('articles').delete().eq('id', editId);
+                if (deleteError) {
+                    showStatus('La nota nueva se guardó, pero no se pudo quitar el ID anterior: ' + deleteError.message, false);
+                }
+            }
+
             if (isEditing) {
                 const idx = cachedArticles.findIndex(a => a.id === editId);
-                if (idx !== -1) cachedArticles[idx] = newArticle;
+                if (idx !== -1) cachedArticles.splice(idx, 1, newArticle);
             } else {
                 cachedArticles.push(newArticle);
             }
