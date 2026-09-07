@@ -42,3 +42,19 @@ drop trigger if exists articles_updated_at on public.articles;
 create trigger articles_updated_at
 before update on public.articles
 for each row execute function public.set_article_updated_at();
+
+insert into storage.buckets (id, name, public)
+values ('article-images', 'article-images', true)
+on conflict (id) do nothing;
+
+drop policy if exists "Authenticated users can upload article images" on storage.objects;
+create policy "Authenticated users can upload article images"
+    on storage.objects for insert
+    to authenticated
+    with check (bucket_id = 'article-images');
+
+drop policy if exists "Public can view article images" on storage.objects;
+create policy "Public can view article images"
+    on storage.objects for select
+    to public
+    using (bucket_id = 'article-images');

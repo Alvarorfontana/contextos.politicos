@@ -145,7 +145,8 @@
                     <div class="form-group">
                         <label>URL de imagen (opcional)</label>
                         <input type="text" id="image" placeholder="https://...">
-                        <div class="hint">Dejar vacío si no lleva imagen.</div>
+                        <input type="file" id="image-file" accept="image/jpeg,image/png,image/webp" style="margin-top:8px;">
+                        <div class="hint">Podés pegar una URL o subir una imagen desde tu computadora.</div>
                     </div>
 
                     <div class="form-group">
@@ -340,13 +341,27 @@
             const editId = document.getElementById('edit-id').value;
             const isEditing = !!editId;
 
+            let imageUrl = document.getElementById('image').value.trim();
+            const imageFile = document.getElementById('image-file').files[0];
+            if (imageFile) {
+                const extension = imageFile.name.split('.').pop().toLowerCase();
+                const filePath = `${crypto.randomUUID()}.${extension}`;
+                const { error: uploadError } = await supabaseClient.storage.from('article-images').upload(filePath, imageFile, { upsert: false });
+                if (uploadError) {
+                    showStatus('No se pudo subir la imagen: ' + uploadError.message, false);
+                    return;
+                }
+                const { data: publicImage } = supabaseClient.storage.from('article-images').getPublicUrl(filePath);
+                imageUrl = publicImage.publicUrl;
+            }
+
             const newArticle = {
                 id: document.getElementById('id').value.trim(),
                 category: document.getElementById('category').value,
                 kicker: document.getElementById('kicker').value.trim(),
                 title: document.getElementById('title').value.trim(),
                 subtitle: document.getElementById('subtitle').value.trim(),
-                image: document.getElementById('image').value.trim(),
+                image: imageUrl,
                 caption: document.getElementById('caption').value.trim(),
                 content: document.getElementById('content').value.trim(),
                 author: document.getElementById('author').value.trim(),
