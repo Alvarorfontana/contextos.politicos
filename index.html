@@ -164,9 +164,9 @@
         <div class="container">
             <div class="framed-header">/// Titulares Principales</div>
 
-            <aside class="ad-banner" aria-label="Publicidad">
-                <a href="https://www.macro.com.ar/" rel="noopener">
-                    <img class="ad-brand" src="https://www.macro.com.ar/imagen/macrologoheader2025/logo_macro_2025.png" alt="Banco Macro">
+            <aside class="ad-banner" id="home-ad" aria-label="Publicidad">
+                <a id="home-ad-link" href="https://www.macro.com.ar/" rel="noopener">
+                    <img id="home-ad-image" class="ad-brand" src="https://www.macro.com.ar/imagen/macrologoheader2025/logo_macro_2025.png" alt="Publicidad">
                 </a>
             </aside>
 
@@ -227,6 +227,13 @@
                     </div>`;
                 return [];
             }
+        }
+
+        async function loadAd() {
+            const { data } = await supabaseClient.from('ads').select('image,target_url').eq('placement', 'home').eq('active', true).limit(1).maybeSingle();
+            if (!data) return;
+            document.getElementById('home-ad-link').href = data.target_url;
+            document.getElementById('home-ad-image').src = data.image;
         }
 
         async function renderFrontpage() {
@@ -300,6 +307,7 @@
         }
 
         renderFrontpage();
+        loadAd();
     </script>
 </body>
 </html>

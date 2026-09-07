@@ -248,9 +248,9 @@
                 <div class="article-body">
                     ${formatArticleContent(article.content)}
                 </div>
-                <aside class="article-ad" aria-label="Publicidad de muestra">
-                    <a href="https://www.macro.com.ar/" rel="noopener">
-                        <img src="https://www.macro.com.ar/imagen/macrologoheader2025/logo_macro_2025.png" alt="Banco Macro">
+                <aside class="article-ad" id="article-ad" aria-label="Publicidad">
+                    <a id="article-ad-link" href="https://www.macro.com.ar/" rel="noopener">
+                        <img id="article-ad-image" src="https://www.macro.com.ar/imagen/macrologoheader2025/logo_macro_2025.png" alt="Publicidad">
                     </a>
                 </aside>
                 <section class="comments-section" aria-labelledby="comments-title">
@@ -267,6 +267,7 @@
             `;
             supabaseClient.from('page_views').insert({ article_id: article.id });
             loadComments(article.id);
+            loadAd();
             document.getElementById('comment-form').addEventListener('submit', async event => {
                 event.preventDefault();
                 const status = document.getElementById('comment-status');
@@ -279,6 +280,13 @@
                 status.textContent = error ? 'No se pudo enviar el comentario.' : 'Comentario enviado. Aparecerá cuando sea aprobado.';
                 if (!error) event.target.reset();
             });
+        }
+
+        async function loadAd() {
+            const { data } = await supabaseClient.from('ads').select('image,target_url').eq('placement', 'article').eq('active', true).limit(1).maybeSingle();
+            if (!data) return;
+            document.getElementById('article-ad-link').href = data.target_url;
+            document.getElementById('article-ad-image').src = data.image;
         }
 
         renderArticle();

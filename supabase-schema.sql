@@ -112,3 +112,34 @@ create policy "Public can view article images"
     on storage.objects for select
     to public
     using (bucket_id = 'article-images');
+
+create table if not exists public.ads (
+    id text primary key,
+    image text not null,
+    target_url text not null,
+    placement text not null default 'home' check (placement in ('home', 'article')),
+    active boolean not null default true,
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now()
+);
+
+alter table public.ads enable row level security;
+
+drop policy if exists "Public can read active ads" on public.ads;
+create policy "Public can read active ads"
+    on public.ads for select
+    to anon, authenticated
+    using (active = true);
+
+drop policy if exists "Authenticated users can manage ads" on public.ads;
+create policy "Authenticated users can manage ads"
+    on public.ads for all
+    to authenticated
+    using (true)
+    with check (true);
+
+insert into public.ads (id, image, target_url, placement, active)
+values
+    ('macro-home', 'https://www.macro.com.ar/imagen/macrologoheader2025/logo_macro_2025.png', 'https://www.macro.com.ar/', 'home', true),
+    ('macro-article', 'https://www.macro.com.ar/imagen/macrologoheader2025/logo_macro_2025.png', 'https://www.macro.com.ar/', 'article', true)
+on conflict (id) do nothing;

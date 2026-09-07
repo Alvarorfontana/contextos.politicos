@@ -79,6 +79,9 @@
         .comments-admin { margin-bottom: 20px; }
         .moderation-item { padding: 12px 0; border-top: 1px solid var(--line); }
         .moderation-item p { margin: 5px 0 8px; color: #444; white-space: pre-wrap; }
+        .ads-admin { margin-bottom: 20px; }
+        .ad-form-grid { display: grid; grid-template-columns: 1fr 1fr 150px auto; gap: 8px; align-items: end; }
+        @media (max-width: 800px) { .ad-form-grid { grid-template-columns: 1fr; } }
         @media (max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } }
     </style>
 <base target="_blank">
@@ -125,6 +128,17 @@
         <div class="panel comments-admin">
             <h2>Moderación de comentarios</h2>
             <div id="comments-admin-list"><div class="empty-state">Cargando comentarios...</div></div>
+        </div>
+        <div class="panel ads-admin">
+            <h2>Banners publicitarios</h2>
+            <form id="ad-form" class="ad-form-grid">
+                <div class="form-group"><label>ID</label><input id="ad-id" placeholder="macro-home" required></div>
+                <div class="form-group"><label>URL del logo o imagen</label><input id="ad-image" type="url" required></div>
+                <div class="form-group"><label>Ubicación</label><select id="ad-placement"><option value="home">Portada</option><option value="article">Notas</option></select></div>
+                <button class="btn btn-primary" type="submit">Guardar banner</button>
+            </form>
+            <div class="form-group" style="margin-top:12px;"><label>Enlace del banner</label><input id="ad-target" type="url" placeholder="https://www.macro.com.ar/" required form="ad-form"></div>
+            <div id="ads-admin-list"><div class="empty-state">Cargando banners...</div></div>
         </div>
         <div class="grid">
             <div class="panel">
@@ -524,6 +538,7 @@
             await getArticles();
             await loadStats();
             await loadCommentsAdmin();
+            await loadAdsAdmin();
             resetForm();
         }
 
@@ -559,6 +574,43 @@
                     <button class="btn btn-danger" onclick="deleteComment('${comment.id}')">Eliminar</button>
                 </div>
             `).join('') : '<div class="empty-state">No hay comentarios.</div>';
+        }
+
+        async function loadAdsAdmin() {
+            const container = document.getElementById('ads-admin-list');
+            const { data, error } = await supabaseClient.from('ads').select('id,image,target_url,placement,active').order('id');
+            if (error) { container.innerHTML = '<div class="empty-state">No se pudieron cargar los banners.</div>'; return; }
+            container.innerHTML = data.length ? data.map(ad => `
+                <div class="moderation-item"><strong>${escapeAdminHtml(ad.id)}</strong> · ${escapeAdminHtml(ad.placement)} · ${ad.active ? 'Activo' : 'Pausado'}
+                    <button class="btn btn-secondary" onclick="toggleAd('${ad.id}', ${!ad.active})">${ad.active ? 'Pausar' : 'Activar'}</button>
+                    <button class="btn btn-danger" onclick="deleteAd('${ad.id}')">Eliminar</button>
+                </div>
+            `).join('') : '<div class="empty-state">No hay banners.</div>';
+        }
+
+        document.getElementById('ad-form').addEventListener('submit', async event => {
+            event.preventDefault();
+            const { error } = await supabaseClient.from('ads').upsert({
+                id: document.getElementById('ad-id').value.trim(),
+                image: document.getElementById('ad-image').value.trim(),
+                target_url: document.getElementById('ad-target').value.trim(),
+                placement: document.getElementById('ad-placement').value,
+                active: true
+            });
+            if (error) { alert('No se pudo guardar el banner.'); return; }
+            event.target.reset();
+            loadAdsAdmin();
+        });
+
+        async function toggleAd(id, active) {
+            await supabaseClient.from('ads').update({ active }).eq('id', id);
+            loadAdsAdmin();
+        }
+
+        async function deleteAd(id) {
+            if (!confirm('¿Eliminar este banner?')) return;
+            await supabaseClient.from('ads').delete().eq('id', id);
+            loadAdsAdmin();
         }
 
         async function approveComment(id) {
