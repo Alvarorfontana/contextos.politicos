@@ -74,6 +74,9 @@
         .article-body h3 { font-family: var(--fuente-sans); font-size: 1.3rem; font-weight: 800; margin: 1.5em 0 0.6em; color: var(--guardian-navy); }
         .article-tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 25px; }
         .article-tag { color: var(--guardian-blue); font-size: 0.82rem; font-weight: 800; }
+        .article-ad { background: linear-gradient(105deg, #063b2d, #0c704d); color: #fff; padding: 15px 18px; margin: 28px 0; }
+        .article-ad strong { display: block; font-family: var(--fuente-titulo); font-size: 1.1rem; margin-bottom: 4px; }
+        .article-ad span { color: #c8f6dd; font-size: 0.7rem; }
         .comments-section { margin-top: 40px; padding-top: 22px; border-top: 2px solid var(--guardian-navy); }
         .comments-section h2 { font-family: var(--fuente-titulo); color: var(--guardian-navy); margin-bottom: 15px; }
         .comment-form { display: grid; gap: 10px; margin-bottom: 25px; }
@@ -246,6 +249,11 @@
                 <div class="article-body">
                     ${formatArticleContent(article.content)}
                 </div>
+                <aside class="article-ad" aria-label="Publicidad de muestra">
+                    <span>PROPUESTA CREATIVA NO OFICIAL · PUBLICIDAD DE MUESTRA</span>
+                    <strong>Provincia cerca tuyo</strong>
+                    <span>Concepto de campaña para Provincia de Buenos Aires y Banco Provincia. No es una comunicación oficial.</span>
+                </aside>
                 <section class="comments-section" aria-labelledby="comments-title">
                     <h2 id="comments-title">Comentarios</h2>
                     <form class="comment-form" id="comment-form">
