@@ -74,10 +74,8 @@
         .article-body h3 { font-family: var(--fuente-sans); font-size: 1.3rem; font-weight: 800; margin: 1.5em 0 0.6em; color: var(--guardian-navy); }
         .article-tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 25px; }
         .article-tag { color: var(--guardian-blue); font-size: 0.82rem; font-weight: 800; }
-        .article-ad { background: linear-gradient(105deg, #063b2d, #0c704d); color: #fff; padding: 15px 18px; margin: 28px 0; }
-        .article-ad strong { display: block; font-family: var(--fuente-titulo); font-size: 1.1rem; margin-bottom: 4px; }
-        .article-ad span { color: #c8f6dd; font-size: 0.7rem; }
-        .article-ad img { width: 115px; background: #fff; padding: 8px; margin-bottom: 10px; }
+        .article-ad { display: flex; justify-content: center; align-items: center; background: #fff; padding: 18px; margin: 28px 0; border: 1px solid var(--guardian-line); }
+        .article-ad img { width: 150px; }
         .comments-section { margin-top: 40px; padding-top: 22px; border-top: 2px solid var(--guardian-navy); }
         .comments-section h2 { font-family: var(--fuente-titulo); color: var(--guardian-navy); margin-bottom: 15px; }
         .comment-form { display: grid; gap: 10px; margin-bottom: 25px; }
@@ -251,10 +249,9 @@
                     ${formatArticleContent(article.content)}
                 </div>
                 <aside class="article-ad" aria-label="Publicidad de muestra">
-                    <img src="https://www.macro.com.ar/imagen/macrologoheader2025/logo_macro_2025.png" alt="Banco Macro">
-                    <span>PROPUESTA CREATIVA NO OFICIAL · PUBLICIDAD DE MUESTRA</span>
-                    <strong>Tu banco, más cerca</strong>
-                    <span>Propuesta visual para Banco Macro. No es una comunicación oficial ni anuncia promociones vigentes.</span>
+                    <a href="https://www.macro.com.ar/" rel="noopener">
+                        <img src="https://www.macro.com.ar/imagen/macrologoheader2025/logo_macro_2025.png" alt="Banco Macro">
+                    </a>
                 </aside>
                 <section class="comments-section" aria-labelledby="comments-title">
                     <h2 id="comments-title">Comentarios</h2>
