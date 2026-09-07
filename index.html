@@ -67,9 +67,10 @@
 
         .frontpage-grid { display: grid; grid-template-columns: 2.5fr 1.5fr 1fr; gap: 20px; border-bottom: 1px solid var(--guardian-line); padding-bottom: 30px; margin-bottom: 30px; }
         .lead-article { border-right: 1px solid var(--guardian-line); padding-right: 20px; }
-        .lead-content-flex { display: flex; gap: 20px; align-items: flex-start; }
+        .lead-content-flex { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.35fr); gap: 24px; align-items: start; }
         .lead-text { flex: 1; }
-        .lead-figure { flex: 1; margin-bottom: 0; }
+        .lead-figure { margin-bottom: 0; }
+        .lead-figure img { width: 100%; height: 310px; object-fit: cover; }
         .article-kicker { color: var(--guardian-red); font-weight: 800; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 5px; display: flex; align-items: center; }
         .lead-title { font-family: var(--fuente-titulo); font-size: 2.1rem; font-weight: 900; line-height: 1.15; margin-bottom: 12px; color: var(--guardian-navy); }
         .lead-title:hover { color: var(--guardian-blue); }
@@ -86,7 +87,15 @@
         .section-row { margin-top: 40px; padding-top: 15px; border-top: 2px solid var(--guardian-navy); }
         .section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 15px; }
         .card-news { border-top: 1px solid var(--guardian-line); padding-top: 10px; }
+        .card-news img { width: 100%; height: 220px; object-fit: cover; }
         .card-news h3 { font-family: var(--fuente-titulo); font-size: 1.15rem; margin-top: 8px; line-height: 1.25; color: var(--guardian-dark); }
+
+        .discussion-callout { display: grid; grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.6fr); gap: 24px; align-items: center; background: #eef6fb; border-top: 4px solid var(--guardian-blue); padding: 18px; margin: 35px 0 10px; }
+        .discussion-callout img { width: 100%; height: 170px; object-fit: cover; }
+        .discussion-callout h2 { font-family: var(--fuente-titulo); color: var(--guardian-navy); font-size: 1.45rem; margin-bottom: 8px; }
+        .discussion-callout p { color: #444; margin-bottom: 12px; }
+        .discussion-link { display: inline-block; background: var(--guardian-navy); color: var(--blanco); padding: 9px 14px; font-size: 0.85rem; font-weight: 800; }
+        .discussion-link:hover { background: var(--guardian-blue); }
 
         footer { background-color: var(--guardian-navy); color: var(--blanco); padding: 40px 0 20px 0; border-top: 4px solid var(--guardian-yellow); }
         .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 30px; margin-bottom: 30px; }
@@ -99,10 +108,12 @@
 
         @media (max-width: 992px) {
             .frontpage-grid { grid-template-columns: 1fr; }
-            .lead-content-flex { flex-direction: column-reverse; }
+            .lead-content-flex { grid-template-columns: 1fr; }
+            .lead-figure img { height: 260px; }
             .lead-article, .secondary-column { border-right: none; padding-right: 0; border-bottom: 1px solid var(--guardian-line); padding-bottom: 20px; }
             .footer-grid { grid-template-columns: 1fr; }
             .site-title { font-size: 2.5rem; }
+            .discussion-callout { grid-template-columns: 1fr; }
         }
     </style>
 <base target="_blank">
@@ -249,6 +260,18 @@
                     `).join('')}
                 </aside>
             `;
+
+            document.getElementById('frontpage-content').insertAdjacentHTML('afterend', `
+                <section class="discussion-callout" aria-labelledby="discussion-title">
+                    <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=900&q=85" alt="Personas conversando alrededor de una mesa">
+                    <div>
+                        <span class="article-kicker">Debate abierto</span>
+                        <h2 id="discussion-title">La discusión que sigue a cada noticia</h2>
+                        <p>Compartí tu lectura, contrastá argumentos y sumate a una conversación informada sobre los temas que atraviesan la agenda política.</p>
+                        <a class="discussion-link" href="mailto:debate@contextopolitico.com?subject=Debate%20en%20Contexto%20Pol%C3%ADtico">Participar del debate</a>
+                    </div>
+                </section>
+            `);
 
             document.getElementById('more-news').innerHTML = generales.map(a => `
                 <article class="card-news">
