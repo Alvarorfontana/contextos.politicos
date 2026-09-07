@@ -66,6 +66,37 @@ create policy "Authenticated users can read page views"
     to authenticated
     using (true);
 
+create table if not exists public.comments (
+    id uuid primary key default gen_random_uuid(),
+    article_id text not null,
+    name text not null,
+    email text not null default '',
+    body text not null,
+    approved boolean not null default false,
+    created_at timestamptz not null default now()
+);
+
+alter table public.comments enable row level security;
+
+drop policy if exists "Public can send comments" on public.comments;
+create policy "Public can send comments"
+    on public.comments for insert
+    to anon, authenticated
+    with check (length(name) between 2 and 80 and length(body) between 3 and 2000);
+
+drop policy if exists "Public can read approved comments" on public.comments;
+create policy "Public can read approved comments"
+    on public.comments for select
+    to anon, authenticated
+    using (approved = true);
+
+drop policy if exists "Authenticated users can moderate comments" on public.comments;
+create policy "Authenticated users can moderate comments"
+    on public.comments for update, delete
+    to authenticated
+    using (true)
+    with check (true);
+
 insert into storage.buckets (id, name, public)
 values ('article-images', 'article-images', true)
 on conflict (id) do nothing;

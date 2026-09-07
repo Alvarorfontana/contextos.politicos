@@ -76,6 +76,9 @@
         .stat-card { padding: 14px; background: #f6f6f6; border-left: 4px solid var(--blue); }
         .stat-card strong { display: block; color: var(--navy); font-size: 1.5rem; }
         .stat-card span { color: #666; font-size: 0.8rem; }
+        .comments-admin { margin-bottom: 20px; }
+        .moderation-item { padding: 12px 0; border-top: 1px solid var(--line); }
+        .moderation-item p { margin: 5px 0 8px; color: #444; white-space: pre-wrap; }
         @media (max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } }
     </style>
 <base target="_blank">
@@ -118,6 +121,10 @@
                 <div class="stat-card"><strong id="unique-articles">0</strong><span>Notas leídas</span></div>
                 <div class="stat-card"><strong id="top-article">Sin datos</strong><span>Nota más leída</span></div>
             </div>
+        </div>
+        <div class="panel comments-admin">
+            <h2>Moderación de comentarios</h2>
+            <div id="comments-admin-list"><div class="empty-state">Cargando comentarios...</div></div>
         </div>
         <div class="grid">
             <div class="panel">
@@ -516,6 +523,7 @@
             document.getElementById('session-email').textContent = session.user.email;
             await getArticles();
             await loadStats();
+            await loadCommentsAdmin();
             resetForm();
         }
 
@@ -530,6 +538,40 @@
             document.getElementById('total-views').textContent = data.length;
             document.getElementById('unique-articles').textContent = Object.keys(counts).length;
             document.getElementById('top-article').textContent = top ? `${top[0]} (${top[1]})` : 'Sin datos';
+        }
+
+        function escapeAdminHtml(value = '') {
+            return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        async function loadCommentsAdmin() {
+            const container = document.getElementById('comments-admin-list');
+            const { data, error } = await supabaseClient.from('comments').select('id,article_id,name,body,approved,created_at').order('created_at', { ascending: false });
+            if (error) {
+                container.innerHTML = '<div class="empty-state">No se pudieron cargar los comentarios.</div>';
+                return;
+            }
+            container.innerHTML = data.length ? data.map(comment => `
+                <div class="moderation-item">
+                    <strong>${escapeAdminHtml(comment.name)}</strong> · <small>${escapeAdminHtml(comment.article_id)}</small>
+                    <p>${escapeAdminHtml(comment.body)}</p>
+                    ${comment.approved ? '<span class="tag tag-secundaria">Aprobado</span>' : `<button class="btn btn-primary" onclick="approveComment('${comment.id}')">Aprobar</button>`}
+                    <button class="btn btn-danger" onclick="deleteComment('${comment.id}')">Eliminar</button>
+                </div>
+            `).join('') : '<div class="empty-state">No hay comentarios.</div>';
+        }
+
+        async function approveComment(id) {
+            const { error } = await supabaseClient.from('comments').update({ approved: true }).eq('id', id);
+            if (error) { alert('No se pudo aprobar el comentario.'); return; }
+            loadCommentsAdmin();
+        }
+
+        async function deleteComment(id) {
+            if (!confirm('¿Eliminar este comentario?')) return;
+            const { error } = await supabaseClient.from('comments').delete().eq('id', id);
+            if (error) { alert('No se pudo eliminar el comentario.'); return; }
+            loadCommentsAdmin();
         }
 
         function openExportModal() {

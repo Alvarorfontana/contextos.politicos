@@ -74,6 +74,16 @@
         .article-body h3 { font-family: var(--fuente-sans); font-size: 1.3rem; font-weight: 800; margin: 1.5em 0 0.6em; color: var(--guardian-navy); }
         .article-tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 25px; }
         .article-tag { color: var(--guardian-blue); font-size: 0.82rem; font-weight: 800; }
+        .comments-section { margin-top: 40px; padding-top: 22px; border-top: 2px solid var(--guardian-navy); }
+        .comments-section h2 { font-family: var(--fuente-titulo); color: var(--guardian-navy); margin-bottom: 15px; }
+        .comment-form { display: grid; gap: 10px; margin-bottom: 25px; }
+        .comment-form input, .comment-form textarea { width: 100%; padding: 10px; border: 1px solid var(--guardian-line); font: inherit; }
+        .comment-form textarea { min-height: 110px; resize: vertical; }
+        .comment-submit { width: fit-content; padding: 10px 15px; border: 0; background: var(--guardian-navy); color: #fff; font-weight: 800; cursor: pointer; }
+        .comment-status { color: #555; font-size: 0.9rem; }
+        .comment-item { padding: 13px 0; border-top: 1px solid var(--guardian-line); }
+        .comment-item strong { color: var(--guardian-navy); }
+        .comment-item p { margin: 4px 0 0; white-space: pre-wrap; }
 
         .not-found { text-align: center; padding: 100px 20px; }
         .not-found h2 { font-family: var(--fuente-titulo); font-size: 2rem; color: var(--guardian-navy); margin-bottom: 15px; }
@@ -142,6 +152,20 @@
                 .split(/\n\s*\n/)
                 .map(paragraph => `<p>${paragraph.trim().replace(/\n/g, '<br>')}</p>`)
                 .join('');
+        }
+
+        function escapeHtml(value = '') {
+            return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        async function loadComments(articleId) {
+            const list = document.getElementById('comments-list');
+            const { data, error } = await supabaseClient.from('comments').select('name,body,created_at').eq('article_id', articleId).eq('approved', true).order('created_at', { ascending: false });
+            if (error) {
+                list.textContent = 'Los comentarios estarán disponibles próximamente.';
+                return;
+            }
+            list.innerHTML = data.length ? data.map(comment => `<div class="comment-item"><strong>${escapeHtml(comment.name)}</strong><p>${escapeHtml(comment.body)}</p></div>`).join('') : '<p class="comment-status">Todavía no hay comentarios aprobados.</p>';
         }
 
             function updateSocialMeta(article) {
@@ -222,8 +246,32 @@
                 <div class="article-body">
                     ${formatArticleContent(article.content)}
                 </div>
+                <section class="comments-section" aria-labelledby="comments-title">
+                    <h2 id="comments-title">Comentarios</h2>
+                    <form class="comment-form" id="comment-form">
+                        <input id="comment-name" type="text" placeholder="Tu nombre" maxlength="80" required>
+                        <input id="comment-email" type="email" placeholder="Tu correo (opcional)" maxlength="160">
+                        <textarea id="comment-body" placeholder="Escribí tu comentario" maxlength="2000" required></textarea>
+                        <button class="comment-submit" type="submit">Enviar comentario</button>
+                        <p class="comment-status" id="comment-status">Tu comentario quedará pendiente de moderación.</p>
+                    </form>
+                    <div id="comments-list"></div>
+                </section>
             `;
             supabaseClient.from('page_views').insert({ article_id: article.id });
+            loadComments(article.id);
+            document.getElementById('comment-form').addEventListener('submit', async event => {
+                event.preventDefault();
+                const status = document.getElementById('comment-status');
+                const { error } = await supabaseClient.from('comments').insert({
+                    article_id: article.id,
+                    name: document.getElementById('comment-name').value.trim(),
+                    email: document.getElementById('comment-email').value.trim(),
+                    body: document.getElementById('comment-body').value.trim()
+                });
+                status.textContent = error ? 'No se pudo enviar el comentario.' : 'Comentario enviado. Aparecerá cuando sea aprobado.';
+                if (!error) event.target.reset();
+            });
         }
 
         renderArticle();
