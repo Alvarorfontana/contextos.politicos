@@ -92,6 +92,15 @@
                 <div class="form-group"><label for="auth-password">Contraseña</label><input type="password" id="auth-password" required autocomplete="current-password"></div>
                 <button type="submit" class="btn btn-primary">Ingresar</button>
             </form>
+            <button type="button" class="btn btn-secondary" id="show-recovery">Olvidé mi contraseña</button>
+            <form id="recovery-form" style="display:none; margin-top:15px;">
+                <div class="form-group"><label for="recovery-email">Correo de tu usuario</label><input type="email" id="recovery-email" required autocomplete="email"></div>
+                <button type="submit" class="btn btn-primary">Enviar enlace de recuperación</button>
+            </form>
+            <form id="new-password-form" style="display:none; margin-top:15px;">
+                <div class="form-group"><label for="new-password">Nueva contraseña</label><input type="password" id="new-password" minlength="6" required autocomplete="new-password"></div>
+                <button type="submit" class="btn btn-primary">Guardar nueva contraseña</button>
+            </form>
         </div>
 
         <div class="admin-shell" id="admin-shell">
@@ -409,6 +418,43 @@
                 return;
             }
             await initAdmin();
+        });
+
+        document.getElementById('show-recovery').addEventListener('click', function() {
+            document.getElementById('recovery-form').style.display = 'block';
+            this.style.display = 'none';
+        });
+
+        document.getElementById('recovery-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const status = document.getElementById('auth-status');
+            const { error } = await supabase.auth.resetPasswordForEmail(document.getElementById('recovery-email').value, {
+                redirectTo: window.location.href.split('#')[0]
+            });
+            status.textContent = error ? 'No se pudo enviar el enlace: ' + error.message : 'Revisa tu correo y abre el enlace recibido.';
+            status.className = 'status-msg ' + (error ? 'status-err' : 'status-ok');
+            status.style.display = 'block';
+        });
+
+        document.getElementById('new-password-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const status = document.getElementById('auth-status');
+            const { error } = await supabase.auth.updateUser({ password: document.getElementById('new-password').value });
+            status.textContent = error ? 'No se pudo cambiar la contraseña: ' + error.message : 'Contraseña actualizada. Ya puedes ingresar.';
+            status.className = 'status-msg ' + (error ? 'status-err' : 'status-ok');
+            status.style.display = 'block';
+            if (!error) document.getElementById('new-password-form').style.display = 'none';
+        });
+
+        supabase.auth.onAuthStateChange((event) => {
+            if (event === 'PASSWORD_RECOVERY') {
+                document.getElementById('auth-panel').style.display = 'block';
+                document.getElementById('admin-shell').style.display = 'none';
+                document.getElementById('auth-form').style.display = 'none';
+                document.getElementById('show-recovery').style.display = 'none';
+                document.getElementById('recovery-form').style.display = 'none';
+                document.getElementById('new-password-form').style.display = 'block';
+            }
         });
 
         async function initAdmin() {
