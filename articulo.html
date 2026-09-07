@@ -11,6 +11,7 @@
     <meta property="og:image" content="https://revistaizquierda.com/wp-content/uploads/2025/04/portada-Marx-profeta-del-decrecimiento-1024x605.png">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://contextos-politicos.vercel.app/articulo.html">
+    <link rel="canonical" href="https://contextos-politicos.vercel.app/articulo.html">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
@@ -193,6 +194,25 @@
                 document.querySelector('meta[name="twitter:title"]').setAttribute('content', article.title);
                 document.querySelector('meta[name="twitter:description"]').setAttribute('content', description);
                 document.querySelector('meta[name="twitter:image"]').setAttribute('content', image);
+                document.querySelector('link[rel="canonical"]').setAttribute('href', articleUrl);
+                let structuredData = document.getElementById('article-structured-data');
+                if (!structuredData) {
+                    structuredData = document.createElement('script');
+                    structuredData.id = 'article-structured-data';
+                    structuredData.type = 'application/ld+json';
+                    document.head.appendChild(structuredData);
+                }
+                structuredData.textContent = JSON.stringify({
+                    '@context': 'https://schema.org',
+                    '@type': 'NewsArticle',
+                    headline: article.title,
+                    description,
+                    image: [image],
+                    datePublished: article.date,
+                    author: { '@type': 'Organization', name: article.author || 'Contexto Político' },
+                    mainEntityOfPage: articleUrl,
+                    publisher: { '@type': 'Organization', name: 'Contexto Político' }
+                });
                 const keywords = (article.tags || '').split(',').map(tag => tag.trim()).filter(Boolean).join(', ');
                 let keywordsMeta = document.querySelector('meta[name="keywords"]');
                 if (!keywordsMeta) {
