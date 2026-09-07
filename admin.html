@@ -92,7 +92,7 @@
                 <div class="form-group"><label for="auth-password">Contraseña</label><input type="password" id="auth-password" required autocomplete="current-password"></div>
                 <button type="submit" class="btn btn-primary">Ingresar</button>
             </form>
-            <button type="button" class="btn btn-secondary" id="show-recovery">Olvidé mi contraseña</button>
+            <button type="button" class="btn btn-secondary" id="show-recovery" onclick="showRecoveryForm()">Olvidé mi contraseña</button>
             <form id="recovery-form" style="display:none; margin-top:15px;">
                 <div class="form-group"><label for="recovery-email">Correo de tu usuario</label><input type="email" id="recovery-email" required autocomplete="email"></div>
                 <button type="submit" class="btn btn-primary">Enviar enlace de recuperación</button>
@@ -227,6 +227,12 @@
             el.className = 'status-msg ' + (ok ? 'status-ok' : 'status-err');
             el.style.display = 'block';
             setTimeout(() => el.style.display = 'none', 4000);
+        }
+
+        function showRecoveryForm() {
+            document.getElementById('recovery-form').style.display = 'block';
+            document.getElementById('show-recovery').style.display = 'none';
+            document.getElementById('recovery-email').focus();
         }
 
         async function getArticles() {
@@ -421,8 +427,7 @@
         });
 
         document.getElementById('show-recovery').addEventListener('click', function() {
-            document.getElementById('recovery-form').style.display = 'block';
-            this.style.display = 'none';
+            showRecoveryForm();
         });
 
         document.getElementById('recovery-form').addEventListener('submit', async function(e) {
