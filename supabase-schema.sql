@@ -46,6 +46,26 @@ for each row execute function public.set_article_updated_at();
 
 alter table public.articles add column if not exists tags text not null default '';
 
+create table if not exists public.page_views (
+    id uuid primary key default gen_random_uuid(),
+    article_id text not null,
+    viewed_at timestamptz not null default now()
+);
+
+alter table public.page_views enable row level security;
+
+drop policy if exists "Public can register page views" on public.page_views;
+create policy "Public can register page views"
+    on public.page_views for insert
+    to anon, authenticated
+    with check (length(article_id) > 0);
+
+drop policy if exists "Authenticated users can read page views" on public.page_views;
+create policy "Authenticated users can read page views"
+    on public.page_views for select
+    to authenticated
+    using (true);
+
 insert into storage.buckets (id, name, public)
 values ('article-images', 'article-images', true)
 on conflict (id) do nothing;

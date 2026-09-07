@@ -223,6 +223,7 @@
                     ${formatArticleContent(article.content)}
                 </div>
             `;
+            supabaseClient.from('page_views').insert({ article_id: article.id });
         }
 
         renderArticle();
