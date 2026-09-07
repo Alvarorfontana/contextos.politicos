@@ -169,18 +169,16 @@
                         <input type="date" id="date" required>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Guardar en memoria</button>
+                    <button type="submit" class="btn btn-primary">Guardar en Supabase</button>
                     <button type="button" class="btn btn-secondary" onclick="resetForm()">Limpiar / Nuevo</button>
                     <button type="button" class="btn btn-danger" onclick="deleteCurrent()" id="btn-delete" style="display:none;">Eliminar</button>
                 </form>
 
                 <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid var(--yellow);">
                     <p style="font-size: 0.85rem; color: #555; margin-bottom: 10px;">
-                        <strong>¿Cómo publicar los cambios?</strong><br>
-                        1. Editá las noticias acá arriba.<br>
-                        2. Hacé clic en "Generar JSON para GitHub".<br>
-                        3. Copiá el código, andá a tu repo de GitHub, abrí <code>data.json</code> y pegalo.<br>
-                        4. Guardá el commit. Vercel se actualiza solo.
+                        <strong>Publicación directa</strong><br>
+                        Editá una noticia y guardala. Los cambios se publican directamente desde Supabase.<br>
+                        Usá "Importar noticias actuales" solo para cargar por primera vez el contenido de <code>data.json</code>.
                     </p>
                     <button type="button" class="btn btn-yellow" onclick="importJsonData()">Importar noticias actuales</button>
                 </div>
