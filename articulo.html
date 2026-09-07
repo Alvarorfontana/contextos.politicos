@@ -131,6 +131,17 @@
             }
         }
 
+        function formatArticleContent(content) {
+            if (!content) return '';
+            if (/<[a-z][\s\S]*>/i.test(content)) return content;
+
+            return content
+                .trim()
+                .split(/\n\s*\n/)
+                .map(paragraph => `<p>${paragraph.trim().replace(/\n/g, '<br>')}</p>`)
+                .join('');
+        }
+
         async function renderArticle() {
             const id = getParam('id');
             const container = document.getElementById('article-container');
@@ -177,7 +188,7 @@
                     <a class="social-link social-whatsapp" href="https://wa.me/?text=${encodeURIComponent(article.title + ' ' + window.location.href)}" aria-label="Compartir por WhatsApp">wa</a>
                 </div>
                 <div class="article-body">
-                    ${article.content}
+                    ${formatArticleContent(article.content)}
                 </div>
             `;
         }
