@@ -428,8 +428,11 @@
         document.getElementById('recovery-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const status = document.getElementById('auth-status');
+            status.textContent = 'Enviando enlace...';
+            status.className = 'status-msg status-ok';
+            status.style.display = 'block';
             const { error } = await supabase.auth.resetPasswordForEmail(document.getElementById('recovery-email').value, {
-                redirectTo: window.location.href.split('#')[0]
+                redirectTo: 'https://contextos-politicos.vercel.app/admin.html'
             });
             status.textContent = error ? 'No se pudo enviar el enlace: ' + error.message : 'Revisa tu correo y abre el enlace recibido.';
             status.className = 'status-msg ' + (error ? 'status-err' : 'status-ok');
