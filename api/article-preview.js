@@ -10,6 +10,13 @@ function escapeHtml(value = '') {
         .replace(/'/g, '&#039;');
 }
 
+function cleanDescription(value = '') {
+    return String(value)
+        .replace(/([a-záéíóúñ])([A-ZÁÉÍÓÚÑ])/g, '$1 $2')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
 module.exports = async function handler(request, response) {
     const id = String(request.query?.id || '').trim();
     if (!id) return response.status(400).send('Falta el identificador de la noticia.');
@@ -24,7 +31,7 @@ module.exports = async function handler(request, response) {
 
     const articleUrl = `https://contextos-politicos.vercel.app/articulo.html?id=${encodeURIComponent(article.id)}`;
     const title = escapeHtml(article.title);
-    const description = escapeHtml(article.subtitle || 'Leé el análisis completo en Contexto Político.');
+    const description = escapeHtml(cleanDescription(article.subtitle || 'Leé el análisis completo en Contexto Político.'));
     const image = escapeHtml(article.image || 'https://revistaizquierda.com/wp-content/uploads/2025/04/portada-Marx-profeta-del-decrecimiento-1024x605.png');
     const canonical = escapeHtml(articleUrl);
 

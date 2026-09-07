@@ -200,7 +200,7 @@
                     <a class="social-link social-facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}" aria-label="Compartir en Facebook">f</a>
                     <a class="social-link social-x" href="https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(article.title)}" aria-label="Compartir en X">X</a>
                     <a class="social-link social-linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}" aria-label="Compartir en LinkedIn">in</a>
-                    <a class="social-link social-whatsapp" href="https://wa.me/?text=${encodeURIComponent(article.title + ' - ' + article.subtitle + ' ' + window.location.origin + '/api/article-preview?id=' + encodeURIComponent(article.id))}" aria-label="Compartir por WhatsApp">wa</a>
+                    <a class="social-link social-whatsapp" href="https://wa.me/?text=${encodeURIComponent(article.title + ' - ' + article.subtitle + ' ' + window.location.origin + '/api/article-preview?id=' + encodeURIComponent(article.id) + '&v=' + encodeURIComponent(article.updated_at || article.date || Date.now()))}" aria-label="Compartir por WhatsApp">wa</a>
                 </div>
                 <div class="article-body">
                     ${formatArticleContent(article.content)}
