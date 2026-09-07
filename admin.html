@@ -217,7 +217,7 @@
     <script src="supabase-config.js"></script>
     <script>
         const DATA_URL = "https://raw.githubusercontent.com/Alvarorfontana/contextos.politicos/main/data.json";
-        const supabase = window.supabase.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.publishableKey);
+        const supabaseClient = window.supabase.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.publishableKey);
 
         let cachedArticles = [];
 
@@ -237,7 +237,7 @@
 
         async function getArticles() {
             try {
-                const { data, error } = await supabase.from('articles').select('*').order('date', { ascending: false });
+                const { data, error } = await supabaseClient.from('articles').select('*').order('date', { ascending: false });
                 if (!error) {
                     cachedArticles = data || [];
                     renderList();
@@ -360,7 +360,7 @@
                 return;
             }
 
-            const { error } = await supabase.from('articles').upsert(newArticle);
+            const { error } = await supabaseClient.from('articles').upsert(newArticle);
             if (error) {
                 showStatus('No se pudo guardar: ' + error.message, false);
                 return;
@@ -379,7 +379,7 @@
         });
 
         async function deleteArticle(id) {
-            const { error } = await supabase.from('articles').delete().eq('id', id);
+            const { error } = await supabaseClient.from('articles').delete().eq('id', id);
             if (error) {
                 showStatus('No se pudo eliminar: ' + error.message, false);
                 return;
@@ -394,7 +394,7 @@
             if (!confirm('Esto cargará las noticias actuales de data.json en Supabase. ¿Continuar?')) return;
             const res = await fetch(DATA_URL);
             const articles = await res.json();
-            const { error } = await supabase.from('articles').upsert(articles);
+            const { error } = await supabaseClient.from('articles').upsert(articles);
             if (error) {
                 showStatus('No se pudo importar: ' + error.message, false);
                 return;
@@ -405,7 +405,7 @@
         }
 
         async function signOut() {
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             document.getElementById('admin-shell').style.display = 'none';
             document.getElementById('auth-panel').style.display = 'block';
         }
@@ -413,7 +413,7 @@
         document.getElementById('auth-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const status = document.getElementById('auth-status');
-            const { error } = await supabase.auth.signInWithPassword({
+            const { error } = await supabaseClient.auth.signInWithPassword({
                 email: document.getElementById('auth-email').value,
                 password: document.getElementById('auth-password').value
             });
@@ -436,7 +436,7 @@
             status.textContent = 'Enviando enlace...';
             status.className = 'status-msg status-ok';
             status.style.display = 'block';
-            const { error } = await supabase.auth.resetPasswordForEmail(document.getElementById('recovery-email').value, {
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(document.getElementById('recovery-email').value, {
                 redirectTo: 'https://contextos-politicos.vercel.app/admin.html'
             });
             status.textContent = error ? 'No se pudo enviar el enlace: ' + error.message : 'Revisa tu correo y abre el enlace recibido.';
@@ -447,14 +447,14 @@
         document.getElementById('new-password-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const status = document.getElementById('auth-status');
-            const { error } = await supabase.auth.updateUser({ password: document.getElementById('new-password').value });
+            const { error } = await supabaseClient.auth.updateUser({ password: document.getElementById('new-password').value });
             status.textContent = error ? 'No se pudo cambiar la contraseña: ' + error.message : 'Contraseña actualizada. Ya puedes ingresar.';
             status.className = 'status-msg ' + (error ? 'status-err' : 'status-ok');
             status.style.display = 'block';
             if (!error) document.getElementById('new-password-form').style.display = 'none';
         });
 
-        supabase.auth.onAuthStateChange((event) => {
+        supabaseClient.auth.onAuthStateChange((event) => {
             if (event === 'PASSWORD_RECOVERY') {
                 document.getElementById('auth-panel').style.display = 'block';
                 document.getElementById('admin-shell').style.display = 'none';
@@ -466,7 +466,7 @@
         });
 
         async function initAdmin() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) return;
             document.getElementById('auth-panel').style.display = 'none';
             document.getElementById('admin-shell').style.display = 'block';

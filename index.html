@@ -201,11 +201,11 @@
     <script src="supabase-config.js"></script>
     <script>
         const DATA_URL = "https://raw.githubusercontent.com/Alvarorfontana/contextos.politicos/main/data.json";
-        const supabase = window.supabase.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.publishableKey);
+        const supabaseClient = window.supabase.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.publishableKey);
 
         async function getArticles() {
             try {
-                const { data, error } = await supabase.from('articles').select('*').eq('published', true).order('date', { ascending: false });
+                const { data, error } = await supabaseClient.from('articles').select('*').eq('published', true).order('date', { ascending: false });
                 if (!error && data && data.length > 0) return data;
                 const res = await fetch(DATA_URL);
                 if (!res.ok) throw new Error("No se pudo cargar");
