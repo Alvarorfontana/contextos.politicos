@@ -142,6 +142,20 @@
                 .join('');
         }
 
+            function updateSocialMeta(article) {
+                const description = article.subtitle || 'Leé el análisis completo en Contexto Político.';
+                const image = article.image || 'https://revistaizquierda.com/wp-content/uploads/2025/04/portada-Marx-profeta-del-decrecimiento-1024x605.png';
+                const articleUrl = window.location.href.split('#')[0];
+                document.title = `${article.title} | Contexto Político`;
+                document.querySelector('meta[property="og:title"]').setAttribute('content', article.title);
+                document.querySelector('meta[property="og:description"]').setAttribute('content', description);
+                document.querySelector('meta[property="og:image"]').setAttribute('content', image);
+                document.querySelector('meta[property="og:url"]').setAttribute('content', articleUrl);
+                document.querySelector('meta[name="twitter:title"]').setAttribute('content', article.title);
+                document.querySelector('meta[name="twitter:description"]').setAttribute('content', description);
+                document.querySelector('meta[name="twitter:image"]').setAttribute('content', image);
+            }
+
         async function renderArticle() {
             const id = getParam('id');
             const container = document.getElementById('article-container');
@@ -162,6 +176,7 @@
             }
 
             document.title = article.title + " | Contexto Político";
+            updateSocialMeta(article);
 
             const imgBlock = article.image ? `
                 <figure class="article-figure">
@@ -185,7 +200,7 @@
                     <a class="social-link social-facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}" aria-label="Compartir en Facebook">f</a>
                     <a class="social-link social-x" href="https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(article.title)}" aria-label="Compartir en X">X</a>
                     <a class="social-link social-linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}" aria-label="Compartir en LinkedIn">in</a>
-                    <a class="social-link social-whatsapp" href="https://wa.me/?text=${encodeURIComponent(article.title + ' ' + window.location.href)}" aria-label="Compartir por WhatsApp">wa</a>
+                    <a class="social-link social-whatsapp" href="https://wa.me/?text=${encodeURIComponent(article.title + ' - ' + article.subtitle + ' ' + window.location.origin + '/api/article-preview?id=' + encodeURIComponent(article.id))}" aria-label="Compartir por WhatsApp">wa</a>
                 </div>
                 <div class="article-body">
                     ${formatArticleContent(article.content)}
