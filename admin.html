@@ -166,6 +166,12 @@
                     </div>
 
                     <div class="form-group">
+                        <label>Hashtags</label>
+                        <input type="text" id="tags" placeholder="política, argentina, economía">
+                        <div class="hint">Separalos con comas, sin necesidad de escribir #.</div>
+                    </div>
+
+                    <div class="form-group">
                         <label>Fecha</label>
                         <input type="date" id="date" required>
                     </div>
@@ -317,6 +323,7 @@
             document.getElementById('caption').value = a.caption || '';
             document.getElementById('content').value = a.content;
             document.getElementById('author').value = a.author;
+            document.getElementById('tags').value = a.tags || '';
             document.getElementById('date').value = a.date;
 
             document.getElementById('form-title').textContent = 'Editar Noticia';
@@ -366,6 +373,7 @@
                 caption: document.getElementById('caption').value.trim(),
                 content: document.getElementById('content').value.trim(),
                 author: document.getElementById('author').value.trim(),
+                tags: document.getElementById('tags').value.trim(),
                 date: document.getElementById('date').value
             };
 

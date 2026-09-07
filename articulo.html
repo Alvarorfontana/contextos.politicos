@@ -72,6 +72,8 @@
         .article-body { font-family: var(--fuente-titulo); font-size: 1.1rem; line-height: 1.8; color: #222; }
         .article-body p { margin-bottom: 1.2em; }
         .article-body h3 { font-family: var(--fuente-sans); font-size: 1.3rem; font-weight: 800; margin: 1.5em 0 0.6em; color: var(--guardian-navy); }
+        .article-tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 25px; }
+        .article-tag { color: var(--guardian-blue); font-size: 0.82rem; font-weight: 800; }
 
         .not-found { text-align: center; padding: 100px 20px; }
         .not-found h2 { font-family: var(--fuente-titulo); font-size: 2rem; color: var(--guardian-navy); margin-bottom: 15px; }
@@ -154,6 +156,14 @@
                 document.querySelector('meta[name="twitter:title"]').setAttribute('content', article.title);
                 document.querySelector('meta[name="twitter:description"]').setAttribute('content', description);
                 document.querySelector('meta[name="twitter:image"]').setAttribute('content', image);
+                const keywords = (article.tags || '').split(',').map(tag => tag.trim()).filter(Boolean).join(', ');
+                let keywordsMeta = document.querySelector('meta[name="keywords"]');
+                if (!keywordsMeta) {
+                    keywordsMeta = document.createElement('meta');
+                    keywordsMeta.setAttribute('name', 'keywords');
+                    document.head.appendChild(keywordsMeta);
+                }
+                keywordsMeta.setAttribute('content', keywords);
             }
 
         async function renderArticle() {
@@ -177,6 +187,12 @@
 
             document.title = article.title + " | Contexto Político";
             updateSocialMeta(article);
+            const tagsBlock = article.tags ? `
+                <div class="article-tags" aria-label="Hashtags">
+                    ${article.tags.split(',').map(tag => tag.trim()).filter(Boolean).map(tag => `<span class="article-tag">#${tag.replace(/^#/, '')}</span>`).join('')}
+                </div>
+            ` : '';
+            const shareTags = article.tags ? article.tags.split(',').map(tag => '#' + tag.trim().replace(/^#/, '')).filter(tag => tag !== '#').join(' ') : '';
 
             const imgBlock = article.image ? `
                 <figure class="article-figure">
@@ -195,12 +211,13 @@
                     </div>
                 </div>
                 ${imgBlock}
+                ${tagsBlock}
                 <div class="share-row" aria-label="Compartir artículo">
                     <span class="share-label">Compartir</span>
                     <a class="social-link social-facebook" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}" aria-label="Compartir en Facebook">f</a>
                     <a class="social-link social-x" href="https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(article.title)}" aria-label="Compartir en X">X</a>
                     <a class="social-link social-linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}" aria-label="Compartir en LinkedIn">in</a>
-                    <a class="social-link social-whatsapp" href="https://wa.me/?text=${encodeURIComponent(article.title + ' - ' + article.subtitle + ' ' + window.location.origin + '/api/article-preview?id=' + encodeURIComponent(article.id) + '&v=' + encodeURIComponent(article.updated_at || article.date || Date.now()))}" aria-label="Compartir por WhatsApp">wa</a>
+                    <a class="social-link social-whatsapp" href="https://wa.me/?text=${encodeURIComponent(article.title + ' - ' + article.subtitle + (shareTags ? ' ' + shareTags : '') + ' ' + window.location.origin + '/api/article-preview?id=' + encodeURIComponent(article.id) + '&v=' + encodeURIComponent(article.updated_at || article.date || Date.now()))}" aria-label="Compartir por WhatsApp">wa</a>
                 </div>
                 <div class="article-body">
                     ${formatArticleContent(article.content)}

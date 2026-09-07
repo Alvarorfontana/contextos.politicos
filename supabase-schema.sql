@@ -8,6 +8,7 @@ create table if not exists public.articles (
     caption text not null default '',
     content text not null default '',
     author text not null default '',
+    tags text not null default '',
     date date not null default current_date,
     published boolean not null default true,
     created_at timestamptz not null default now(),
@@ -42,6 +43,8 @@ drop trigger if exists articles_updated_at on public.articles;
 create trigger articles_updated_at
 before update on public.articles
 for each row execute function public.set_article_updated_at();
+
+alter table public.articles add column if not exists tags text not null default '';
 
 insert into storage.buckets (id, name, public)
 values ('article-images', 'article-images', true)

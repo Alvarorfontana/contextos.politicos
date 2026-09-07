@@ -21,7 +21,7 @@ module.exports = async function handler(request, response) {
     const id = String(request.query?.id || '').trim();
     if (!id) return response.status(400).send('Falta el identificador de la noticia.');
 
-    const url = `${SUPABASE_URL}/rest/v1/articles?id=eq.${encodeURIComponent(id)}&select=id,title,subtitle,image`;
+    const url = `${SUPABASE_URL}/rest/v1/articles?id=eq.${encodeURIComponent(id)}&select=id,title,subtitle,image,tags`;
     const result = await fetch(url, {
         headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
     });
@@ -34,6 +34,7 @@ module.exports = async function handler(request, response) {
     const description = escapeHtml(cleanDescription(article.subtitle || 'Leé el análisis completo en Contexto Político.'));
     const image = escapeHtml(`https://contextos-politicos.vercel.app/api/article-image?id=${encodeURIComponent(article.id)}`);
     const canonical = escapeHtml(articleUrl);
+    const tags = String(article.tags || '').split(',').map(tag => tag.trim().replace(/^#/, '')).filter(Boolean);
 
     response.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
     response.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -46,6 +47,7 @@ module.exports = async function handler(request, response) {
 <meta property="og:description" content="${description}">
 <meta property="og:image" content="${image}">
 <meta property="og:url" content="${canonical}">
+${tags.map(tag => `<meta property="article:tag" content="${escapeHtml(tag)}">`).join('')}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${title}">
 <meta name="twitter:description" content="${description}">
