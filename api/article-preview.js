@@ -32,7 +32,7 @@ module.exports = async function handler(request, response) {
     const articleUrl = `https://contextos-politicos.vercel.app/articulo.html?id=${encodeURIComponent(article.id)}`;
     const title = escapeHtml(article.title);
     const description = escapeHtml(cleanDescription(article.subtitle || 'Leé el análisis completo en Contexto Político.'));
-    const image = escapeHtml(article.image || 'https://revistaizquierda.com/wp-content/uploads/2025/04/portada-Marx-profeta-del-decrecimiento-1024x605.png');
+    const image = escapeHtml(`https://contextos-politicos.vercel.app/api/article-image?id=${encodeURIComponent(article.id)}`);
     const canonical = escapeHtml(articleUrl);
 
     response.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
