@@ -12,7 +12,9 @@ module.exports = async function handler(request, response) {
     const imageUrl = articles[0]?.image;
     if (!imageUrl) return response.status(404).send('La noticia no tiene imagen.');
 
-    const imageResponse = await fetch(imageUrl);
+    const imageResponse = await fetch(imageUrl, {
+        headers: { 'user-agent': 'Mozilla/5.0 (compatible; ContextoPolitico/1.0)' }
+    });
     if (!imageResponse.ok) return response.status(404).send('No se pudo cargar la imagen.');
 
     response.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
